@@ -50,7 +50,7 @@ export const registerUser = async (payload) => {
     userId: newUser._id,
     ...newSession,
   });
-  return {...createdSession.toObject(), ...user.toObject()};
+  return {...createdSession.toObject(), ...newUser.toObject()};
 };
 
 export const loginUser = async (payload) => {
