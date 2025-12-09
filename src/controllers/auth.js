@@ -17,12 +17,18 @@ import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
 res.cookie('refreshToken', session.refreshToken, {
-  httpOnly: false,
+  httpOnly: true,
+  secure: true,       
+  sameSite: "none",     
+  path: "/",
   maxAge: THIRTY_DAYS
 });
 
 res.cookie('sessionId', session._id, {
-  httpOnly: false,
+  httpOnly: true,
+  secure: true,
+  sameSite: "none", 
+  path: "/",
   maxAge: THIRTY_DAYS
 });
 };
