@@ -4,7 +4,7 @@ import {SORT_ORDER} from "../constants/index.js";
 
 export const getAllContacts = async ({sortBy="name", sortOrder=SORT_ORDER.ASC, userId }) => {
 
-  return await ContactsCollection.find({userId}).sort({[sortBy]:sortOrder}).exec();
+  return await ContactsCollection.find({userId}).collation({ locale: 'en', strength: 1 }).sort({[sortBy]:sortOrder}).exec();
 };
 
 export const getContactsById = async (contactId, userId) => {
