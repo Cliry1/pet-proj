@@ -20,7 +20,7 @@ export const setupServer = ()=>{
 
   app.use(express.json());
   app.use(cors({
-  origin: 'https://goit-react-hw-08-alpha-lake.vercel.app/',
+  origin: 'https://goit-react-hw-08-alpha-lake.vercel.app',
   credentials: true
   }));
   app.use(cookieParser());
