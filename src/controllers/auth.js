@@ -16,16 +16,21 @@ import {
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
-  res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: false,
-    sameSite: "none",
-    expires: new Date(Date.now() + THIRTY_DAYS),
-  });
-  res.cookie('sessionId', session._id, {
-    httpOnly: false,
-    sameSite: "none",
-    expires: new Date(Date.now() + THIRTY_DAYS),
-  });
+res.cookie('refreshToken', session.refreshToken, {
+  httpOnly: false,
+  secure: false,       // localhost не HTTPS
+  sameSite: "lax",     // для локального тесту можна lox
+  path: "/",
+  maxAge: THIRTY_DAYS
+});
+
+res.cookie('sessionId', session._id, {
+  httpOnly: false,
+  secure: false,
+  sameSite: "lax", 
+  path: "/",
+  maxAge: THIRTY_DAYS
+});
 };
 
 export const registerUserController = async (req, res) => {
