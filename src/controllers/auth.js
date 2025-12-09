@@ -19,7 +19,7 @@ const setupSession = async (res, session) => {
 res.cookie('refreshToken', session.refreshToken, {
   httpOnly: false,
   secure: false,       // localhost не HTTPS
-  sameSite: "lax",     // для локального тесту можна lox
+  sameSite: "none",     // для локального тесту можна lox
   path: "/",
   maxAge: THIRTY_DAYS
 });
@@ -27,7 +27,7 @@ res.cookie('refreshToken', session.refreshToken, {
 res.cookie('sessionId', session._id, {
   httpOnly: false,
   secure: false,
-  sameSite: "lax", 
+  sameSite: "none", 
   path: "/",
   maxAge: THIRTY_DAYS
 });
