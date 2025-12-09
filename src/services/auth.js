@@ -46,11 +46,11 @@ export const registerUser = async (payload) => {
     password: encryptedPassword,
   });
   const newSession = createSession();
-  return await SessionCollection.create({
+  const createdSession = await SessionCollection.create({
     userId: newUser._id,
     ...newSession,
   });
-
+  return {...createdSession.toObject(), ...user.toObject()};
 };
 
 export const loginUser = async (payload) => {
@@ -64,10 +64,11 @@ export const loginUser = async (payload) => {
 
   const newSession = createSession();
 
-  return await SessionCollection.create({
+  const createdSession = await SessionCollection.create({
     userId: user._id,
     ...newSession,
   });
+  return {...createdSession.toObject(), ...user.toObject()};
 };
 
 export const logoutUser = async (sessionId) => {
