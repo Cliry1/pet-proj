@@ -30,7 +30,7 @@ export const authenticate = async (req,res,next)=>{
 
   const user = await UserCollection.findById(session.userId);
   if(!user){
-    next(createHttpError(401));
+    next(createHttpError(401, "Authorization problem"));
     return;
   }
   req.user = user;

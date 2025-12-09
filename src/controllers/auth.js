@@ -59,7 +59,7 @@ export const logoutUserController = async (req, res) => {
   if (req.cookies.sessionId) {
     await logoutUser(req.cookies.sessionId);
   } else {
-    throw createHttpError(401);
+    throw  createHttpError(401, "Authorization problem2");
   }
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
