@@ -10,7 +10,10 @@ import { env } from './utils/env.js';
 import { UPLOAD_DIR } from './constants/index.js';
 // import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
-
+const allowedOrigins = [
+  "https://goit-react-hw-08-alpha-lake.vercel.app",
+  "http://localhost:3000"
+];
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -20,7 +23,12 @@ export const setupServer = ()=>{
 
   app.use(express.json());
   app.use(cors({
-  origin: 'https://goit-react-hw-08-alpha-lake.vercel.app',
+  origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
   credentials: true
   }));
   app.use(cookieParser());
