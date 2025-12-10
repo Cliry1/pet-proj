@@ -222,7 +222,7 @@ export const loginOrSignupWithGoogle = async (code) => {
 };
 
 
-export const checkPasswordSet =  (password)=>{
+export const checkPasswordSet = (password)=>{
   let isPasswordSet=true;
   if(password ===env("NO_PASSWORD_FOR_OAUTH")){
     isPasswordSet = false;
