@@ -214,11 +214,11 @@ export const loginOrSignupWithGoogle = async (code) => {
 
   const newSession = createSession();
 
-  return await SessionCollection.create({
+  const createdSession = await SessionCollection.create({
     userId: user._id,
     ...newSession,
   });
-
+  return {...createdSession.toObject(), ...user.toObject()};
 };
 
 
