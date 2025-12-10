@@ -12,7 +12,7 @@ import { UPLOAD_DIR } from './constants/index.js';
 
 const allowedOrigins = [
   "https://goit-react-hw-08-alpha-lake.vercel.app",
-  "http://localhost:3000"
+  "http://localhost:5173"
 ];
 
 const PORT = Number(env('PORT', '3000'));
