@@ -34,30 +34,30 @@ res.cookie('sessionId', session._id.toString(), {
 };
 
 export const registerUserController = async (req, res) => {
-  const sessionAndUser = await registerUser(req.body);
-  setupSession(res, sessionAndUser);
+  const {user, session} = await registerUser(req.body);
+  setupSession(res, session);
 
   res.status(201).json({
     status: 201,
     message: 'Succesfully registered a user!',
     data: {
-      accessToken: sessionAndUser.accessToken,
-      user:{email:sessionAndUser.email,name:sessionAndUser.name}
+      accessToken: session.accessToken,
+      user
     },
   });
 };
 
 export const loginUserController = async (req, res) => {
-  const sessionAndUser = await loginUser(req.body);
+  const {user, session} = await loginUser(req.body);
 
-  setupSession(res, sessionAndUser);
+  setupSession(res, session);
 
   res.json({
     status: 200,
     message: 'Successfully logged in an user!',
     data: {
-      accessToken: sessionAndUser.accessToken,
-    user:{email:sessionAndUser.email,name:sessionAndUser.name}
+      accessToken: session.accessToken,
+      user
     },
   });
 };
@@ -115,14 +115,14 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 };
 
 export const loginWithGoogleController = async (req, res) => {
-  const sessionAndUser = await loginOrSignupWithGoogle(req.body.code);
-  setupSession(res, sessionAndUser);
+  const {user, session} = await loginOrSignupWithGoogle(req.body.code);
+  setupSession(res, session);
   res.json({
     status: 200,
     message: 'Successfully logged in with Google OAuth!',
     data: {
-      accessToken: sessionAndUser.accessToken,
-      user:{email:sessionAndUser.email, name:sessionAndUser.name}
+      accessToken: session.accessToken,
+      user
     },
   });
 };

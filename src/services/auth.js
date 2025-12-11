@@ -50,7 +50,17 @@ export const registerUser = async (payload) => {
     userId: newUser._id,
     ...newSession,
   });
-  return {...createdSession.toObject(), ...newUser.toObject()};
+  return {
+  user: {
+    name: user.name,
+    email: user.email,
+  },
+  session: {
+    _id: createdSession._id.toString(),
+    accessToken: createdSession.accessToken,
+    refreshToken: createdSession.refreshToken,
+  }
+};
 };
 
 export const loginUser = async (payload) => {
@@ -67,7 +77,17 @@ export const loginUser = async (payload) => {
     userId: user._id,
     ...newSession,
   });
-  return {...createdSession.toObject(), ...user.toObject()};
+  return {
+  user: {
+    name: user.name,
+    email: user.email,
+  },
+  session: {
+    _id: createdSession._id.toString(),
+    accessToken: createdSession.accessToken,
+    refreshToken: createdSession.refreshToken,
+  }
+};
 };
 
 export const logoutUser = async (sessionId) => {
@@ -218,7 +238,17 @@ export const loginOrSignupWithGoogle = async (code) => {
     userId: user._id,
     ...newSession,
   });
-  return {...createdSession.toObject(), ...user.toObject()};
+  return {
+  user: {
+    name: user.name,
+    email: user.email,
+  },
+  session: {
+    _id: createdSession._id.toString(),
+    accessToken: createdSession.accessToken,
+    refreshToken: createdSession.refreshToken,
+  }
+};
 };
 
 
