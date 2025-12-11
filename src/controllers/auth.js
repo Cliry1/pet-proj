@@ -16,7 +16,7 @@ import {
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
-res.cookie('refreshToken', session.refreshToken, {
+res.cookie('refreshToken', session.refreshToken.toString(), {
   httpOnly: true,
   secure: true,       
   sameSite: "none",     
@@ -36,8 +36,6 @@ res.cookie('sessionId', session._id.toString(), {
 export const registerUserController = async (req, res) => {
   const {user, session} = await registerUser(req.body);
   setupSession(res, session);
-  console.log('session._id:', session._id);          // має бути рядок
-  console.log('typeof session._id:', typeof session._id);
   res.status(201).json({
     status: 201,
     message: 'Succesfully registered a user!',
@@ -67,7 +65,7 @@ export const logoutUserController = async (req, res) => {
   if (req.cookies.sessionId) {
     await logoutUser(req.cookies.sessionId);
   } else {
-    throw  createHttpError(401, "Authorization problem2");
+    throw  createHttpError(401, "Authorization problem");
   }
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');

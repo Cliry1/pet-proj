@@ -92,7 +92,7 @@ export const loginUser = async (payload) => {
 };
 
 export const logoutUser = async (sessionId) => {
-  await SessionCollection.deleteOne({ _id: sessionId });
+  await SessionCollection.deleteOne({ _id: new ObjectId(sessionId) });
 };
 
 export const refreshUserSession = async ({ sessionId, refreshToken }) => {
@@ -103,7 +103,7 @@ export const refreshUserSession = async ({ sessionId, refreshToken }) => {
   if (!session) throw createHttpError(401, 'Session not found');
 
   const newSession = createSession();
-  await SessionCollection.deleteOne({ _id: sessionId, refreshToken });
+  await SessionCollection.deleteOne({ _id: new ObjectId(sessionId), refreshToken });
 
   return await SessionCollection.create({
     userId: session.userId,
@@ -211,7 +211,7 @@ export const resetPassword = async (payload, sessionId) => {
     { password: encryptedPassword },
   );
 
-  await SessionCollection.deleteOne({ _id: sessionId });
+  await SessionCollection.deleteOne({ _id: new ObjectId(sessionId) });
 
   await ResetPasswordCollection.deleteOne({ userId: user._id });
 };
