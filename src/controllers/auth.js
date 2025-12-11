@@ -24,7 +24,7 @@ res.cookie('refreshToken', session.refreshToken, {
   maxAge: THIRTY_DAYS
 });
 
-res.cookie('sessionId', session._id, {
+res.cookie('sessionId', session._id.toString(), {
   httpOnly: true,
   secure: true,
   sameSite: "none", 
