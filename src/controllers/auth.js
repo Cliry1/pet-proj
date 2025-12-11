@@ -36,7 +36,8 @@ res.cookie('sessionId', session._id.toString(), {
 export const registerUserController = async (req, res) => {
   const {user, session} = await registerUser(req.body);
   setupSession(res, session);
-
+  console.log('session._id:', session._id);          // має бути рядок
+  console.log('typeof session._id:', typeof session._id);
   res.status(201).json({
     status: 201,
     message: 'Succesfully registered a user!',

@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import { UserCollection } from '../db/models/user.js';
 import { SessionCollection } from '../db/models/session.js';
 import { ResetPasswordCollection } from '../db/models/resetPasswordTokens.js';
+import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 import {
   FIFTEEN_MINUTES,
@@ -52,8 +53,8 @@ export const registerUser = async (payload) => {
   });
   return {
   user: {
-    name: user.name,
-    email: user.email,
+    name: newUser.name,
+    email: newUser.email,
   },
   session: {
     _id: createdSession._id.toString(),
@@ -96,7 +97,7 @@ export const logoutUser = async (sessionId) => {
 
 export const refreshUserSession = async ({ sessionId, refreshToken }) => {
   const session = await SessionCollection.findOne({
-    _id: sessionId,
+    _id:  new ObjectId(sessionId),
     refreshToken,
   });
   if (!session) throw createHttpError(401, 'Session not found');
