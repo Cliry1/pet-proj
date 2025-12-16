@@ -269,7 +269,7 @@ export const loginOrSignupWithGithub = async (code) => {
       headers: { Authorization: `token ${accessToken}` },
     });
 
-    const primaryEmail = emailsResponse.data.find(e => e.primary)?.email || `${randomUUID()}_TEMPORARY_EMAIL_FOR_USER_WITHOUT_EMAIL`;
+    const primaryEmail = emailsResponse.data.find(e => e.primary)?.email || `${randomUUID()}_${env('NO_EMAIL_FOR_OAUTH')}`;
 
     let user = await UserCollection.findOne({ email: primaryEmail });
     if (!user) {
