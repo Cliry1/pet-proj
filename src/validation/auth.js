@@ -64,6 +64,12 @@ export const loginWithGoogleOAuthSchema = Joi.object({
   })
 });
 
+export const loginWithGithubOAuthSchema = Joi.object({
+  code: Joi.string().required().messages({
+    'string.base':'Code should be a string',
+    'any.required': 'Code is required',
+  })
+});
 
 export const requestSetPasswordEmailSchema =Joi.object({
   email:Joi.string().email().required().messages({

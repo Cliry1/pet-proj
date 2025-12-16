@@ -22,7 +22,8 @@ import {
   getFullNameFromGoogleTokenPayload,
   validateCode,
 } from '../utils/googleOAuth2.js';
-
+import axios from 'axios';
+import { randomUUID } from 'node:crypto';
 
 
 const createSession = () => {
@@ -139,7 +140,7 @@ export const requestResetToken = async (email) => {
 
   const html = template({
     name: user.name,
-    link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env('BACKEND_DOMAIN')}/reset-password?token=${resetToken}`,
   });
   try {
     await sendEmail({
@@ -253,6 +254,58 @@ export const loginOrSignupWithGoogle = async (code) => {
 };
 
 
+
+export const loginOrSignupWithGithub = async (code) => {
+  try{
+    const response = await axios.post(`https://github.com/login/oauth/access_token`,{ client_id: env('CLIENT_ID'), client_secret: env('CLIENT_SECRET'), code },{ headers: { Accept: "application/json" }});
+    const accessToken = response.data.access_token;
+
+    const userResponse = await axios.get("https://api.github.com/user", {
+      headers: { Authorization: `token ${accessToken}` },
+    });
+    const login = userResponse.data.login;
+    if (!login) throw createHttpError(401);
+    const emailsResponse = await axios.get("https://api.github.com/user/emails", {
+      headers: { Authorization: `token ${accessToken}` },
+    });
+
+    const primaryEmail = emailsResponse.data.find(e => e.primary)?.email || `${randomUUID()}_TEMPORARY_EMAIL_FOR_USER_WITHOUT_EMAIL`;
+
+    let user = await UserCollection.findOne({ email: primaryEmail });
+    if (!user) {
+      user = await UserCollection.create({
+        email: primaryEmail,
+        name: login,
+        password: env("NO_PASSWORD_FOR_OAUTH"),
+      });
+    }
+    const newSession = createSession();
+    const createdSession = await SessionCollection.create({
+      userId: user._id,
+      ...newSession,
+    });
+    return {
+      user: {
+        name: user.name,
+        email: user.email,
+      },
+      session: {
+        _id: createdSession._id.toString(),
+        accessToken: createdSession.accessToken,
+        refreshToken: createdSession.refreshToken,
+      }
+    };
+  }catch(err){
+    if(err instanceof Error)
+    throw createHttpError(500,"Something went wrong");
+  }
+};
+
+
+
+
+
+
 export const checkPasswordSet = (password)=>{
   let isPasswordSet=true;
   if(password ===env("NO_PASSWORD_FOR_OAUTH")){
@@ -311,7 +364,7 @@ export const requestSetPasswordToken = async (email) => {
 
   const html = template({
     name: user.name,
-    link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env('BACKEND_DOMAIN')}/reset-password?token=${resetToken}`,
   });
   try {
     await sendEmail({
@@ -395,27 +448,3 @@ export const setPassword = async (payload) => {
 
 
 
-
-export const deleteUserWithFacebook = async (signedRequest)=>{
-  if(!signedRequest){
-    throw createHttpError(400, 'No signed request provided');
-  }
-    const [, encodedPayload] = signedRequest.split('.');
-  if (!encodedPayload) {
-    throw createHttpError(400, 'Invalid signed request format');
-
-  }
-  const payload = JSON.parse(Buffer.from(encodedPayload, 'base64').toString('utf8'));
-  if(!payload.user_id){
-    throw createHttpError(404, 'Invalid signed request payload');
-  }
-
-  const deleted = await UserCollection.deleteOne({ facebookId:payload.user_id });
-
-  const confirmationCode = crypto.randomUUID();
-
-  return {
-    confirmation_code: confirmationCode,
-    deletedCount: deleted.deletedCount
-  };
-};

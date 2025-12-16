@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
 import { THIRTY_DAYS } from '../constants/index.js';
+import { env } from '../utils/env.js';
 import {
   registerUser,
   loginUser,
@@ -11,9 +12,9 @@ import {
   checkPasswordSet,
   requestSetPasswordToken,
   setPassword,
-  deleteUserWithFacebook
+  loginOrSignupWithGithub
 } from '../services/auth.js';
-import { generateAuthUrl } from '../utils/googleOAuth2.js';
+import { generateAuthUrlGoogle } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
 res.cookie('refreshToken', session.refreshToken.toString(), {
@@ -109,12 +110,32 @@ export const resetPasswordController = async (req, res) => {
 };
 
 export const getGoogleOAuthUrlController = async (req, res) => {
-  const url = generateAuthUrl();
+  const url = generateAuthUrlGoogle();
   res.redirect(url);
 };
 
 export const loginWithGoogleController = async (req, res) => {
   const {user, session} = await loginOrSignupWithGoogle(req.body.code);
+  setupSession(res, session);
+  res.json({
+    status: 200,
+    message: 'Successfully logged in with Google OAuth!',
+    data: {
+      accessToken: session.accessToken,
+      user
+    },
+  });
+};
+
+
+export const getGithubOAuthUrlController = async (req, res) => {
+  const redirectUri = `${env("FRONTEND_DOMAIN")}/confirm-github-auth`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${env('CLIENT_ID_GITHUB')}&redirect_uri=${redirectUri}&scope=read:user%20user:email`;
+  res.redirect(url);
+};
+
+export const loginWithGithubController = async (req, res) => {
+  const {user, session} = await loginOrSignupWithGithub(req.body.code);
   setupSession(res, session);
   res.json({
     status: 200,
@@ -158,15 +179,3 @@ export const setPasswordController = async (req, res) => {
   });
 };
 
-export const deleteUserWithFacebookController = async (req, res) => {
-  const result = await deleteUserWithFacebook(req.body.signed_request);
-
-  res.json({
-    message: 'User was deleted!',
-    status: 200,
-    data: {
-      url: 'http://localhost:1573',
-      confirmation_code: result.confirmation_code
-    },
-  });
-};

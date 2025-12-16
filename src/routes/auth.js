@@ -10,6 +10,7 @@ import {
   loginWithGoogleOAuthSchema,
   setPasswordSchema,
   requestSetPasswordEmailSchema,
+  loginWithGithubOAuthSchema
 } from '../validation/auth.js';
 import {
   refreshUserController,
@@ -23,7 +24,8 @@ import {
   loginWithGoogleController,
   requestSetPasswordTokenController,
   setPasswordController,
-  deleteUserWithFacebookController
+  getGithubOAuthUrlController,
+  loginWithGithubController
 } from '../controllers/auth.js';
 
 const router = Router();
@@ -57,10 +59,10 @@ router.post(
   ctrlWrapper(resetPasswordController),
 );
 
-router.get('/get-oauth-url', ctrlWrapper(getGoogleOAuthUrlController));
+router.get('/get-oauth-url-google', ctrlWrapper(getGoogleOAuthUrlController));
 
 router.post(
-  '/confirm-oauth',
+  '/confirm-oauth-google',
   validateBody(loginWithGoogleOAuthSchema),
   ctrlWrapper(loginWithGoogleController),
 );
@@ -79,10 +81,12 @@ router.post(
   ctrlWrapper(setPasswordController),
 );
 
+router.get('/get-oauth-url-github', ctrlWrapper(getGithubOAuthUrlController));
 
 router.post(
-  '/delete-user-facebook',
-  ctrlWrapper(deleteUserWithFacebookController),
+  '/confirm-oauth-github',
+  validateBody(loginWithGithubOAuthSchema),
+  ctrlWrapper(loginWithGithubController),
 );
 
 export default router;

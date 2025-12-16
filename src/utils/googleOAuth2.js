@@ -14,7 +14,7 @@ const googleOAuthClient = new OAuth2Client({
   redirectUri: oauthConfig.web.redirect_uris[0],
 });
 
-export const generateAuthUrl = () =>
+export const generateAuthUrlGoogle = () =>
   googleOAuthClient.generateAuthUrl({
     prompt: "select_account",
     scope: [
