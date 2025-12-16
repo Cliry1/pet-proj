@@ -23,6 +23,7 @@ import {
   loginWithGoogleController,
   requestSetPasswordTokenController,
   setPasswordController,
+  deleteUserWithFacebookController
 } from '../controllers/auth.js';
 
 const router = Router();
@@ -78,5 +79,10 @@ router.post(
   ctrlWrapper(setPasswordController),
 );
 
+
+router.post(
+  '/delete-user-facebook',
+  ctrlWrapper(deleteUserWithFacebookController),
+);
 
 export default router;
