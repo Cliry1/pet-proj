@@ -257,7 +257,7 @@ export const loginOrSignupWithGoogle = async (code) => {
 
 export const loginOrSignupWithGithub = async (code) => {
   try{
-    const response = await axios.post(`https://github.com/login/oauth/access_token`,{ client_id: env('CLIENT_ID'), client_secret: env('CLIENT_SECRET'), code },{ headers: { Accept: "application/json" }});
+    const response = await axios.post(`https://github.com/login/oauth/access_token`,{ client_id: env('CLIENT_ID_GITHUB'), client_secret: env('CLIENT_SECRET_GITHUB'), code },{ headers: { Accept: "application/json" }});
     const accessToken = response.data.access_token;
 
     const userResponse = await axios.get("https://api.github.com/user", {
