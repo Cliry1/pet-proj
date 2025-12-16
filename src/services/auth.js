@@ -392,3 +392,30 @@ export const setPassword = async (payload) => {
 
   await ResetPasswordCollection.deleteOne({ userId: user._id });
 };
+
+
+
+
+export const deleteUserWithFacebook = async (signedRequest)=>{
+  if(!signedRequest){
+    throw createHttpError(400, 'No signed request provided');
+  }
+    const [, encodedPayload] = signedRequest.split('.');
+  if (!encodedPayload) {
+    throw createHttpError(400, 'Invalid signed request format');
+
+  }
+  const payload = JSON.parse(Buffer.from(encodedPayload, 'base64').toString('utf8'));
+  if(!payload.user_id){
+    throw createHttpError(404, 'Invalid signed request payload');
+  }
+
+  const deleted = await UserCollection.deleteOne({ facebookId:payload.user_id });
+
+  const confirmationCode = crypto.randomUUID();
+
+  return {
+    confirmation_code: confirmationCode,
+    deletedCount: deleted.deletedCount
+  };
+};

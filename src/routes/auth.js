@@ -78,4 +78,5 @@ router.post(
   ctrlWrapper(setPasswordController),
 );
 
+
 export default router;

@@ -11,7 +11,7 @@ import {
   checkPasswordSet,
   requestSetPasswordToken,
   setPassword,
-  
+  deleteUserWithFacebook
 } from '../services/auth.js';
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
@@ -152,8 +152,21 @@ export const requestSetPasswordTokenController = async (req, res) => {
 export const setPasswordController = async (req, res) => {
   await setPassword(req.body);
   res.json({
-    message: 'Password was successfully reset!',
+    message: 'Password was successfully set!',
     status: 200,
     data: {},
+  });
+};
+
+export const deleteUserWithFacebookController = async (req, res) => {
+  const result = await deleteUserWithFacebook(req.body.signed_request);
+
+  res.json({
+    message: 'User was deleted!',
+    status: 200,
+    data: {
+      url: 'http://localhost:1573',
+      confirmation_code: result.confirmation_code
+    },
   });
 };
