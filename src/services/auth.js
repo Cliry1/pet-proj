@@ -140,7 +140,7 @@ export const requestResetToken = async (email) => {
 
   const html = template({
     name: user.name,
-    link: `${env('BACKEND_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env('FRONTEND_DOMAIN')}/forgot-password?token=${resetToken}`,
   });
   try {
     await sendEmail({
@@ -353,18 +353,18 @@ export const requestSetPasswordToken = async (email) => {
     },
   );
 
-  const resetPasswordTemplatePath = path.join(
+  const setPasswordTemplatePath = path.join(
     TEMPLATES_DIR,
     'set-password-email.html',
   );
   const templateSourse = (
-    await fs.readFile(resetPasswordTemplatePath)
+    await fs.readFile(setPasswordTemplatePath)
   ).toString();
   const template = handlebars.compile(templateSourse);
 
   const html = template({
     name: user.name,
-    link: `${env('BACKEND_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env('FRONTEND_DOMAIN')}/reset-password?token=${resetToken}`,
   });
   try {
     await sendEmail({
@@ -373,10 +373,10 @@ export const requestSetPasswordToken = async (email) => {
       subject: 'Set your password',
       html,
     });
-    const encryptedResetPasswordToken = await bcrypt.hash(resetToken, 10);
+    const encryptedSetPasswordToken = await bcrypt.hash(resetToken, 10);
     await ResetPasswordCollection.deleteOne({ userId: user._id });
     await ResetPasswordCollection.create({
-      resetPasswordToken: encryptedResetPasswordToken,
+      resetPasswordToken: encryptedSetPasswordToken,
       resetPasswordTokenValidUntil: new Date(Date.now() + FIVE_MINUTES),
       userId: user._id,
     });
