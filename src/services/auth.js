@@ -40,7 +40,7 @@ const createSession = () => {
 
 export const registerUser = async (payload) => {
   const user = await UserCollection.findOne({ email: payload.email });
-  if (user) throw createHttpError(409, 'Email in use');
+  if (user) throw createHttpError(409, 'Email in use. Try another.');
 
   const encryptedPassword = await bcrypt.hash(payload.password, 10);
   const newUser = await UserCollection.create({
@@ -67,10 +67,10 @@ export const registerUser = async (payload) => {
 
 export const loginUser = async (payload) => {
   const user = await UserCollection.findOne({ email: payload.email });
-  if (!user) throw createHttpError(404, 'User not found');
+  if (!user) throw createHttpError(404, 'User not found!');
 
   const isEqual = await bcrypt.compare(payload.password, user.password);
-  if (!isEqual) throw createHttpError(401, 'Unauthorized');
+  if (!isEqual) throw createHttpError(401, 'Incorrect password or login!');
 
 
   const newSession = createSession();
@@ -223,7 +223,7 @@ export const loginOrSignupWithGoogle = async (code) => {
   const decoded = decodeURIComponent(code);
   const loginTicket = await validateCode(decoded);
   const payload = loginTicket.getPayload();
-  if (!payload) throw createHttpError(401);
+  if (!payload) throw createHttpError(400, "Bad request!");
 
   let user = await UserCollection.findOne({ email: payload.email });
   if (!user) {
@@ -264,7 +264,7 @@ export const loginOrSignupWithGithub = async (code) => {
       headers: { Authorization: `token ${accessToken}` },
     });
     const login = userResponse.data.login;
-    if (!login) throw createHttpError(401);
+    if (!login) throw createHttpError(400, "Bad request!");
     const emailsResponse = await axios.get("https://api.github.com/user/emails", {
       headers: { Authorization: `token ${accessToken}` },
     });
@@ -295,7 +295,7 @@ export const loginOrSignupWithGithub = async (code) => {
         refreshToken: createdSession.refreshToken,
       }
     };
-  }catch(err){
+  } catch(err){
     if(err instanceof Error)
     throw createHttpError(500,"Something went wrong");
   }
@@ -364,7 +364,7 @@ export const requestSetPasswordToken = async (email) => {
 
   const html = template({
     name: user.name,
-    link: `${env('FRONTEND_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env('FRONTEND_DOMAIN')}/set-password?token=${resetToken}`,
   });
   try {
     await sendEmail({

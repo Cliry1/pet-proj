@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { THIRTY_DAYS } from '../constants/index.js';
 import { env } from '../utils/env.js';
+import {dbActive} from "../db/initMongoConnection.js";
 import {
   registerUser,
   loginUser,
@@ -12,43 +13,43 @@ import {
   checkPasswordSet,
   requestSetPasswordToken,
   setPassword,
-  loginOrSignupWithGithub
+  loginOrSignupWithGithub,
 } from '../services/auth.js';
 import { generateAuthUrlGoogle } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
-res.cookie('refreshToken', session.refreshToken.toString(), {
-  httpOnly: true,
-  secure: true,       
-  sameSite: "none",     
-  path: "/",
-  maxAge: THIRTY_DAYS
-});
+  res.cookie('refreshToken', session.refreshToken.toString(), {
+    httpOnly: false,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+    maxAge: THIRTY_DAYS,
+  });
 
-res.cookie('sessionId', session._id.toString(), {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none", 
-  path: "/",
-  maxAge: THIRTY_DAYS
-});
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: false,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+    maxAge: THIRTY_DAYS,
+  });
 };
 
 export const registerUserController = async (req, res) => {
-  const {user, session} = await registerUser(req.body);
+  const { user, session } = await registerUser(req.body);
   setupSession(res, session);
   res.status(201).json({
     status: 201,
     message: 'Succesfully registered a user!',
     data: {
       accessToken: session.accessToken,
-      user
+      user,
     },
   });
 };
 
 export const loginUserController = async (req, res) => {
-  const {user, session} = await loginUser(req.body);
+  const { user, session } = await loginUser(req.body);
 
   setupSession(res, session);
 
@@ -57,7 +58,7 @@ export const loginUserController = async (req, res) => {
     message: 'Successfully logged in an user!',
     data: {
       accessToken: session.accessToken,
-      user
+      user,
     },
   });
 };
@@ -66,7 +67,7 @@ export const logoutUserController = async (req, res) => {
   if (req.cookies.sessionId) {
     await logoutUser(req.cookies.sessionId);
   } else {
-    throw  createHttpError(401, "Authorization problem");
+    throw createHttpError(401, 'Authorization problem');
   }
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
@@ -115,34 +116,33 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 };
 
 export const loginWithGoogleController = async (req, res) => {
-  const {user, session} = await loginOrSignupWithGoogle(req.body.code);
+  const { user, session } = await loginOrSignupWithGoogle(req.body.code);
   setupSession(res, session);
   res.json({
     status: 200,
     message: 'Successfully logged in with Google OAuth!',
     data: {
       accessToken: session.accessToken,
-      user
+      user,
     },
   });
 };
 
-
 export const getGithubOAuthUrlController = async (req, res) => {
-  const redirectUri = `${env("FRONTEND_DOMAIN")}/confirm-github-auth`;
+  const redirectUri = `${env('FRONTEND_DOMAIN')}/confirm-github-auth`;
   const url = `https://github.com/login/oauth/authorize?client_id=${env('CLIENT_ID_GITHUB')}&redirect_uri=${redirectUri}&scope=read:user%20user:email`;
   res.redirect(url);
 };
 
 export const loginWithGithubController = async (req, res) => {
-  const {user, session} = await loginOrSignupWithGithub(req.body.code);
+  const { user, session } = await loginOrSignupWithGithub(req.body.code);
   setupSession(res, session);
   res.json({
     status: 200,
     message: 'Successfully logged in with Google OAuth!',
     data: {
       accessToken: session.accessToken,
-      user
+      user,
     },
   });
 };
@@ -164,7 +164,8 @@ export const refreshUserController = async (req, res) => {
 export const requestSetPasswordTokenController = async (req, res) => {
   await requestSetPasswordToken(req.body.email);
   res.json({
-    message: 'If the account exists, a password`s setter has been sent on email.',
+    message:
+      'If the account exists, a password`s setter has been sent on email.',
     status: 200,
     data: {},
   });
@@ -179,3 +180,10 @@ export const setPasswordController = async (req, res) => {
   });
 };
 
+
+export const checkHealthController = async (req, res) => {
+  res.json({
+    status: 200,
+    data: {dbActive},
+  });;
+};

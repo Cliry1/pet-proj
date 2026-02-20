@@ -9,6 +9,21 @@ const contactsSchema = new Schema({
     type:String,
     required:true,
   },
+  secondPhoneNumber :{
+    type:String,
+  },
+  instagram :{
+    type:String,
+  },
+  telegram :{
+    type:String,
+  },
+  twitter :{
+    type:String,
+  },
+  facebook :{
+    type:String,
+  },
   userId:{
     type: Schema.Types.ObjectId,
     required:true, 

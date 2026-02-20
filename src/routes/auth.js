@@ -25,7 +25,8 @@ import {
   requestSetPasswordTokenController,
   setPasswordController,
   getGithubOAuthUrlController,
-  loginWithGithubController
+  loginWithGithubController,
+  checkHealthController
 } from '../controllers/auth.js';
 
 const router = Router();
@@ -87,6 +88,11 @@ router.post(
   '/confirm-oauth-github',
   validateBody(loginWithGithubOAuthSchema),
   ctrlWrapper(loginWithGithubController),
+);
+
+router.get(
+  '/health',
+  ctrlWrapper(checkHealthController),
 );
 
 export default router;

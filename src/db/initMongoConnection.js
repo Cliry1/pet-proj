@@ -13,3 +13,8 @@ export const initMongoConnection = async ()=>{
     throw error;
   }
 };
+
+export let dbActive=1; 
+setInterval(() => {
+  dbActive = mongoose.connection.readyState;
+}, 60000);
