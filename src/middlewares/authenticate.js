@@ -15,13 +15,11 @@ export const authenticate = async (req,res,next)=>{
     next(createHttpError(401, 'Auth header should be of type Bearer'));
     return;
   }
-
   const session = await SessionCollection.findOne({accessToken:token});
   if(!session){
     next(createHttpError(401, 'Session not found'));
     return;
   }
-  
   const isAccessTokenExpired= new Date()>new Date(session.accessTokenValidUntil);
   if(isAccessTokenExpired){
     next(createHttpError(401, 'Access token expired'));
