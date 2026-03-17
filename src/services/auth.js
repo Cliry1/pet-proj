@@ -143,12 +143,12 @@ export const requestResetToken = async (email) => {
     link: `${env('FRONTEND_DOMAIN')}/forgot-password?token=${resetToken}`,
   });
   try {
-    await sendEmail({
-      from: env(SMTP.SMTP_FROM),
-      to: email,
-      subject: 'Reset your password',
-      html,
-    });
+    // await sendEmail({
+    //   from: env(SMTP.SMTP_FROM),
+    //   to: email,
+    //   subject: 'Reset your password',
+    //   html,
+    // });
     const encryptedResetPasswordToken = await bcrypt.hash(resetToken, 10);
     await ResetPasswordCollection.deleteOne({ userId: user._id });
     await ResetPasswordCollection.create({
