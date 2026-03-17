@@ -19,7 +19,7 @@ import { generateAuthUrlGoogle } from '../utils/googleOAuth2.js';
 
 const setupSession = async (res, session) => {
   res.cookie('refreshToken', session.refreshToken.toString(), {
-    httpOnly: false,
+    httpOnly: true,
     secure: true,
     sameSite: 'none',
     path: '/',
@@ -27,7 +27,7 @@ const setupSession = async (res, session) => {
   });
 
   res.cookie('sessionId', session._id.toString(), {
-    httpOnly: false,
+    httpOnly: true,
     secure: true,
     sameSite: 'none',
     path: '/',
