@@ -1,5 +1,5 @@
 import express from 'express';
-import pino from 'pino-http';
+// import pino from 'pino-http';
 import cors from 'cors';
 
 import router from "./routes/index.js";

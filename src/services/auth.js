@@ -14,7 +14,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { SMTP } from '../constants/index.js';
 import { env } from '../utils/env.js';
-import { sendEmail } from '../utils/sendMail.js';
+// import { sendEmail } from '../utils/sendMail.js';
 import { sendMailBrevoApi } from '../utils/sendMailBrevoApi.js';
 import handlebars from 'handlebars';
 import path from 'node:path';
@@ -374,12 +374,18 @@ export const requestSetPasswordToken = async (email) => {
     link: `${env('FRONTEND_DOMAIN')}/set-password?token=${resetToken}`,
   });
   try {
-    await sendEmail({
+    await sendMailBrevoApi({
       from: env(SMTP.SMTP_FROM),
-      to: email,
+      email,
       subject: 'Set your password',
       html,
     });
+    // await sendEmail({
+    //   from: env(SMTP.SMTP_FROM),
+    //   to: email,
+    //   subject: 'Set your password',
+    //   html,
+    // });
     const encryptedSetPasswordToken = await bcrypt.hash(resetToken, 10);
     await ResetPasswordCollection.deleteOne({ userId: user._id });
     await ResetPasswordCollection.create({
